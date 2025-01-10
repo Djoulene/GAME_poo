@@ -1,0 +1,170 @@
+package main;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JPanel;
+
+import entity.Player;
+import object.superobject;
+import tiles.tilemanager;
+
+
+public class gamepanel extends JPanel implements Runnable{
+
+	//screen settings
+	final int originaltilesize = 16; 
+	final int scale = 3;
+	public final int tilesize = originaltilesize * scale;
+	public final int maxscreencol = 16;
+	public final int maxscreenrow = 12;
+	public final int screenwidth = maxscreencol * tilesize;
+	public final int screenheight = maxscreenrow * tilesize;
+	//world settings
+	public final int maxworldcol = 50;
+	public final int maxworldrow = 50;
+	public final int worldwidth = tilesize * maxworldcol;
+	public final int worldheight = tilesize * maxworldrow;
+
+
+
+	int fps = 60;
+	//system
+	tilemanager tilem = new tilemanager(this);
+	keyhandler keyh = new keyhandler();
+	sound music = new sound();
+	sound se = new sound();
+	public collisioncheck cc = new collisioncheck(this);
+    public assetsetter as = new assetsetter(this);
+    public ui UI = new ui(this);
+	Thread gamethread;
+	
+    //entity and objects
+    
+	public Player player = new Player(this , keyh);
+	public superobject obj[] = new superobject[10];
+	
+	//player default pos
+	//int playery = 100;
+	//int playerx = 100;
+	//int playerspeed = 4;
+	
+public gamepanel() {
+	this.setPreferredSize(new Dimension(screenwidth,screenheight));
+	this.setBackground(Color.black);
+	this.setDoubleBuffered(true);
+	this.addKeyListener(keyh);
+	this.setFocusable(true);
+}
+public void setupgame() {
+	
+	as.setobject();
+	
+	playmusic(0);
+}
+
+public void startgamethread() {
+	gamethread = new Thread(this);
+	gamethread.start();
+	
+}
+
+
+//	public void run() {
+//		// fix fps
+//		double drawinterval=1000000000/fps;
+//		double nextdrawtime=System.nanoTime() + drawinterval;
+//		
+//		while(gamethread != null) {
+//	
+//			update();
+//			
+//			repaint();
+//			
+//			try {
+//				
+//				double remainingtime = nextdrawtime - System.nanoTime();
+//				remainingtime = remainingtime/1000000;
+//				if(remainingtime<0) {
+//					remainingtime = 0;
+//				}
+//				
+//				
+//				Thread.sleep((long)remainingtime);
+//				nextdrawtime += drawinterval;
+//				
+//			} catch (InterruptedException e) {
+//				
+//				e.printStackTrace();
+//			}
+//	
+//			
+//	}
+//		
+//		
+public void run() {
+	
+	double drawintervale = 1000000000/fps;
+	double delta = 0;
+	long lasttime = System.nanoTime();
+	long currenttime;
+	
+	while(gamethread != null) {
+		
+		
+		currenttime=System.nanoTime();
+		delta += (currenttime - lasttime)/drawintervale;
+		lasttime = currenttime;
+		
+		if(delta>=1) {
+			update();
+			repaint();
+			delta--;
+		}
+		
+
+			}
+}
+public void update() {
+player.update();
+}
+
+
+public void paintComponent(Graphics g) {
+	
+	
+	
+	super.paintComponent(g);
+	
+	Graphics2D g2 = (Graphics2D)g;
+	
+	tilem.draw(g2);
+	
+	for(int i = 0; i<obj.length ; i++) {
+		if(obj[i] != null) {
+			obj[i].draw(g2, this);
+		}
+	}
+	player.draw(g2);
+
+	UI.draw(g2);
+	
+	g2.dispose();
+	}
+
+
+
+public void playmusic(int i) {
+	music.setfile(i);
+	music.play();
+	music.loop();
+}
+public void stopmusic() {
+	music.stop();
+}
+public void player(int i) {
+	se.setfile(i);
+	se.play();
+	
+}
+}

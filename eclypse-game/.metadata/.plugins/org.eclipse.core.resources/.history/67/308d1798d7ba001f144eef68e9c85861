@@ -1,0 +1,266 @@
+package main;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+import javax.swing.JPanel;
+
+import entity.Entity;
+import entity.Player;
+import tiles.tilemanager;
+
+
+public class gamepanel extends JPanel implements Runnable{
+
+	//screen settings
+	final int originaltilesize = 16; 
+	final int scale = 3;
+	public final int tilesize = originaltilesize * scale;
+	public final int maxscreencol = 20;
+	public final int maxscreenrow = 12;
+	public final int screenwidth = maxscreencol * tilesize;
+	public final int screenheight = maxscreenrow * tilesize;
+	//world settings
+	public final int maxworldcol = 50;
+	public final int maxworldrow = 50;
+	public final int worldwidth = tilesize * maxworldcol;
+	public final int worldheight = tilesize * maxworldrow;
+	public final int characterstate = 4;
+	//fullscreen
+	int screenwidth2 = screenwidth;
+	int screenheight2 = screenheight;
+	BufferedImage tempscreen;
+	Graphics2D g2;
+	
+	int fps = 60;
+	//system
+	tilemanager tilem = new tilemanager(this);
+	public keyhandler keyh = new keyhandler(this);
+	sound music = new sound();
+	sound se = new sound();
+	public collisioncheck cc = new collisioncheck(this);
+    public assetsetter as = new assetsetter(this);
+    public ui UI = new ui(this);
+    public Eventhandler eventH = new Eventhandler(this);
+	Thread gamethread;
+	
+	
+    //entity and objects
+    
+	public Player player = new Player(this , keyh);
+	public Entity obj[] = new Entity[20];
+	public Entity npc[] = new Entity[20];
+	public Entity mon[] = new Entity[20];
+	ArrayList<Entity> entitylist = new ArrayList<>();
+	public ArrayList<Entity> projectilelist = new ArrayList<>();
+	//GAME STATES
+	public int gameState;
+	
+	public final int titlestate = 0;
+	public final int playstate = 1;
+	public final int pausestate = 2;
+	public final int dialoguestate = 3;
+	//player default pos
+	//int playery = 100;
+	//int playerx = 100;
+	//int playerspeed = 4;
+	
+public gamepanel() {
+	this.setPreferredSize(new Dimension(screenwidth,screenheight));
+	this.setBackground(Color.black);
+	this.setDoubleBuffered(true);
+	this.addKeyListener(keyh);
+	this.setFocusable(true);
+}
+public void setupgame() {
+	as.setmonster();
+	as.setobject();
+	as.setnpc();
+	playmusic(0);
+	stopmusic();
+	gameState = titlestate;
+	tempscreen = new BufferedImage(screenwidth,screenheight,BufferedImage.TYPE_INT_ARGB);
+	g2 = (Graphics2D)tempscreen.getGraphics();
+}
+
+public void startgamethread() {
+	gamethread = new Thread(this);
+	gamethread.start();
+	
+}
+
+
+//	public void run() {
+//		// fix fps
+//		double drawinterval=1000000000/fps;
+//		double nextdrawtime=System.nanoTime() + drawinterval;
+//		
+//		while(gamethread != null) {
+//	
+//			update();
+//			
+//			repaint();
+//			
+//			try {
+//				
+//				double remainingtime = nextdrawtime - System.nanoTime();
+//				remainingtime = remainingtime/1000000;
+//				if(remainingtime<0) {
+//					remainingtime = 0;
+//				}
+//				
+//				
+//				Thread.sleep((long)remainingtime);
+//				nextdrawtime += drawinterval;
+//				
+//			} catch (InterruptedException e) {
+//				
+//				e.printStackTrace();
+//			}
+//	
+//			
+//	}
+//		
+//		
+public void run() {
+	
+	double drawintervale = 1000000000/fps;
+	double delta = 0;
+	long lasttime = System.nanoTime();
+	long currenttime;
+	
+	while(gamethread != null) {
+		
+		
+		currenttime=System.nanoTime();
+		delta += (currenttime - lasttime)/drawintervale;
+		lasttime = currenttime;
+		
+		if(delta>=1) {
+			update();
+			repaint();
+			delta--;
+		}
+		
+
+			}
+}
+public void update() {
+	player.update();
+	if(gameState == playstate) {
+		for(int i=0 ; i<npc.length ; i++) {
+			if(npc[i] != null) {
+				npc[i].update();
+			}
+		}
+	
+
+		for(int i=0 ; i<mon.length ; i++) {
+			if(mon[i] != null) {
+				if(mon[i].alive == true && mon[i].dying==false) {
+					mon[i].update();
+				}
+				if(mon[i].alive == false) {
+					mon[i] = null;
+				}
+			}
+		}
+		for(int i=0 ; i<projectilelist.size() ; i++) {
+			if(projectilelist.get(i) != null) {
+				if(projectilelist.get(i).alive == true) {
+					projectilelist.get(i).update();
+				}
+				if(projectilelist.get(i).alive == false) {
+					projectilelist.remove(i);
+				}
+			}
+		}
+	}
+	if(gameState == pausestate) {
+
+	}
+}
+
+
+public void paintComponent(Graphics g) {
+	
+	super.paintComponent(g);
+	
+	Graphics2D g2 = (Graphics2D)g;
+
+	
+	if(gameState == titlestate) {
+		UI.draw(g2);
+	}
+	else {
+		
+		tilem.draw(g2);
+		//add entities to the list
+		entitylist.add(player);
+		
+	for(int i = 0 ; i<npc.length; i++) {
+		if(npc[i] != null) {
+			entitylist.add(npc[i]);
+		}
+	}
+	for(int i = 0 ; i<npc.length; i++) {
+		if(npc[i] != null) {
+			entitylist.add(npc[i]);
+		}
+	}
+	for(int i = 0 ; i<obj.length; i++) {
+		if(mon[i] != null) {
+			entitylist.add(mon[i]);
+		}
+	}
+	for(int i = 0 ; i<projectilelist.size(); i++) {
+		if(projectilelist.get(i) != null) {
+			entitylist.add(projectilelist.get(i));
+		}
+	}
+	
+	//sorting
+	Collections.sort(entitylist , new Comparator<Entity>(){
+		@Override
+		public int compare(Entity e1 , Entity e2) {
+			int result = Integer.compare(e1.worldy, e2.worldy);
+			return result;
+		}
+	});
+	
+	//draw entities
+	for(int i= 0 ; i<entitylist.size() ; i++) {
+		entitylist.get(i).draw(g2);
+	}
+	//empty entity list
+	entitylist.clear();
+
+	
+		UI.draw(g2);
+		
+		g2.dispose();
+	}
+
+	}
+
+
+
+public void playmusic(int i) {
+	music.setfile(i);
+	music.play();
+	music.loop();
+}
+public void stopmusic() {
+	music.stop();
+}
+public void player(int i) {
+	se.setfile(i);
+	se.play();
+	
+}
+}

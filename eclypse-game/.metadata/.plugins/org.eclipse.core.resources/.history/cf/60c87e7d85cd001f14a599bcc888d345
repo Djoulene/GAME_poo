@@ -1,0 +1,37 @@
+package entity;
+
+import main.gamepanel;
+import main.keyhandler;
+import object.objearthball;
+import object.objfireball;
+
+public class Mage extends Player{
+	public Mage(gamepanel gp, keyhandler keyh) {
+		super(gp, keyh);
+	}
+	@Override
+	public void setdefaultvalues() {	
+		speed = 4;
+		attack = 0; 
+		defense = 1;
+		exp = 0;
+		nextlvlexp = 5;
+		maxlife = 6;
+		lvl = 1;
+		life = maxlife;
+		projectile = new objfireball(gp);
+		projectile2 = new objearthball(gp);
+	}
+
+	public void getplayerimage() 
+	{
+		up1 = setup("/mage/mage_up_1",gp.tilesize,gp.tilesize);
+		up2 = setup("/mage/mage_up_2",gp.tilesize,gp.tilesize);
+		down1 = setup("/mage/mage_down_1",gp.tilesize,gp.tilesize);
+		down2 = setup("/mage/mage_down_2",gp.tilesize,gp.tilesize);
+		right1 = setup("/mage/mage_right_1",gp.tilesize,gp.tilesize);
+		right2 = setup("/mage/mage_right_2",gp.tilesize,gp.tilesize);
+		left1 = setup("/mage/mage_left_1",gp.tilesize,gp.tilesize);
+		left2 = setup("/mage/mage_left_2",gp.tilesize,gp.tilesize);
+	}
+}

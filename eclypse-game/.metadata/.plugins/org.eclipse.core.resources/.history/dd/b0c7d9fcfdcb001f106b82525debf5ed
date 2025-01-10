@@ -1,0 +1,51 @@
+package main;
+
+import entity.Entity;
+import entity.oldman;
+import monster.Monslime;
+import object.objboots;
+import object.objchest;
+import object.objdoor;
+import object.objkey;
+
+public class assetsetter {
+	gamepanel gp;
+	public assetsetter (gamepanel gp) {
+		this.gp = gp;
+	}
+	public void setobject() {
+	}
+	public void setnpc() {
+		int mapnum = 2;
+		int i=0;
+		
+		gp.npc[mapnum][i]=new oldman(gp);
+		setternpc(mapnum,i,20,21);
+	}
+	public void setmonster() {
+		int mapnum = 3;
+		int i = 0;
+		
+		gp.mon[mapnum][i]=new Monslime(gp);
+		settermon(mapnum,i,23,35);
+		
+		gp.mon[mapnum][i]=new Monslime(gp);
+		settermon(mapnum,i,23,35);
+
+	}
+	public void setternpc(int map,int i,int locationx , int locationy) {
+
+		gp.npc[map][i].worldx = gp.tilesize*locationx;
+		gp.npc[map][i].worldy = gp.tilesize*locationy;
+	}	
+	public void setterobj(int map,int i,int locationx , int locationy) {
+
+		gp.obj[map][i].worldx = gp.tilesize*locationx;
+		gp.obj[map][i].worldy = gp.tilesize*locationy;
+	}
+	public void settermon(int map,int i,int locationx , int locationy) {
+
+		gp.mon[map][i].worldx = gp.tilesize*locationx;
+		gp.mon[map][i].worldy = gp.tilesize*locationy;
+	}
+}

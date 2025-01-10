@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<item key="replaceBarOpen" value="true"/>
+	<list key="searchhistory">
+		<item value="gp.play"/>
+		<item value="2"/>
+		<item value="checklvlup"/>
+		<item value="instanceof"/>
+		<item value="proje"/>
+		<item value="world"/>
+		<item value="index"/>
+		<item value="screen"/>
+		<item value="maxworld"/>
+		<item value="col"/>
+		<item value="scree"/>
+		<item value="collision"/>
+		<item value="eventr"/>
+		<item value="mon"/>
+		<item value="target"/>
+	</list>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="selection" value="if(gp.keyh.warrior == true) {"/>
+		<list key="findhistory">
+			<item value="if(gp.keyh.warrior == true) {"/>
+			<item value=" while(col &lt; gp.maxscreencol) {"/>
+		</list>
+	</section>
+</section>

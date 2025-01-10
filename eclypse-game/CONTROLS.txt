@@ -1,0 +1,5 @@
+Z :move forward	  | E 	  :fireball for mage |
+S :move backward  | ENTER :melee
+D :move right     | P 	  :character stats   |
+Q :move left      | T	  :debug
+_____________________________________________|
